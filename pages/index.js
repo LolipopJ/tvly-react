@@ -1,5 +1,9 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
+import 'fontsource-roboto/300';
+import 'fontsource-roboto/400';
+import 'fontsource-roboto/500';
+import 'fontsource-roboto/700';
 
 export default function Home() {
   return (
@@ -61,5 +65,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
