@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import 'fontsource-roboto/300';
-import 'fontsource-roboto/400';
-import 'fontsource-roboto/500';
-import 'fontsource-roboto/700';
+import 'fontsource-roboto/300-normal.css';
+import 'fontsource-roboto/400-normal.css';
+import 'fontsource-roboto/500-normal.css';
+import 'fontsource-roboto/700-normal.css';
 
 export default function Home() {
   return (
