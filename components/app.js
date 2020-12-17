@@ -160,6 +160,10 @@ function PersistentDrawerLeft(props) {
     setMobileOpen(!mobileOpen);
   };
 
+  const handelDrawerClose = () => {
+    setMobileOpen(false);
+  };
+
   const handleMobileMenuOpen = (event) => { // 打开移动端的操作菜单
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -318,7 +322,7 @@ function PersistentDrawerLeft(props) {
               <ListItem
                 button
                 selected={props.filter === list.filter}
-                onClick={handleDrawerToggle}
+                onClick={handelDrawerClose}
               >
                 <ListItemIcon>
                   {renderDrawerListItemIcon(list.type)}
