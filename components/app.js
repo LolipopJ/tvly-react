@@ -315,7 +315,11 @@ function PersistentDrawerLeft(props) {
         {channelList.map((list) => (
           <div key={list.filter}>
             <Link href={'/channel/' + list.filter}>
-              <ListItem button selected={props.filter === list.filter}>
+              <ListItem
+                button
+                selected={props.filter === list.filter}
+                onClick={handleDrawerToggle}
+              >
                 <ListItemIcon>
                   {renderDrawerListItemIcon(list.type)}
                 </ListItemIcon>
