@@ -6,8 +6,12 @@
     "extends": [
         "eslint:recommended",
         "google",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
     ],
+    "globals": {
+        "process": true
+    },
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -19,5 +23,6 @@
         "react"
     ],
     "rules": {
+        "require-jsdoc": "off"
     }
 }
