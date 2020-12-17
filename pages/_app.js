@@ -8,9 +8,11 @@ import 'fontsource-roboto/400-normal.css';
 import 'fontsource-roboto/500-normal.css';
 import 'fontsource-roboto/700-normal.css';
 
+
+const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+
 // eslint-disable-next-line react/prop-types
 function MyApp({Component, pageProps}) {
-  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
   console.log('Release version: ' + appVersion);
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');

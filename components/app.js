@@ -1,6 +1,7 @@
 /* eslint-disable quote-props */
 import React from 'react';
-import clsx from 'clsx';
+import Link from 'next/link';
+import PropTypes from 'prop-types';
 import {fade, makeStyles, useTheme} from '@material-ui/core/styles';
 
 import Drawer from '@material-ui/core/Drawer';
@@ -17,20 +18,31 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Hidden from '@material-ui/core/Hidden';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import SearchIcon from '@material-ui/icons/Search';
 import PaletteIcon from '@material-ui/icons/Palette';
 import DarkModeIcon from '@material-ui/icons/Brightness4';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ViewListIcon from '@material-ui/icons/ViewList';
+import LiveTvIcon from '@material-ui/icons/LiveTv';
+import HdIcon from '@material-ui/icons/Hd';
+import StarsIcon from '@material-ui/icons/Stars';
+import RadioIcon from '@material-ui/icons/Radio';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+
+import channelList from '../assets/channelList';
 
 const drawerWidth = 240;
+
+const appName = process.env.NEXT_PUBLIC_APP_NAME;
+const themeLightLabel = '切换为暗色';
+const themeDarkLabel = '切换为亮色';
+const paletteLabel = '选择主题色';
+const viewListLabel = '排列为模块视图';
+const viewModuleLabel = '排列为列表视图';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,21 +52,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: { // 打开 Drawer 后 App Bar 的偏移
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
   },
   menuButton: { // 打开 Drawer 的按钮
     marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   search: { // 搜索栏
     position: 'relative',
@@ -87,7 +94,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
       width: '20ch',
@@ -108,85 +114,78 @@ const useStyles = makeStyles((theme) => ({
   hide: {
     display: 'none',
   },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
+  drawer: { // 抽屉
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+  },
+  drawerDivider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   drawerPaper: {
     width: drawerWidth,
   },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-  },
-  content: {
+  toolbar: theme.mixins.toolbar,
+  content: { // 主要内容
     flexGrow: 1,
     padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: -drawerWidth,
-  },
-  contentShift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
   },
 }));
 
-export default function PersistentDrawerLeft() {
-  const appName = process.env.NEXT_PUBLIC_APP_NAME;
-  const searchPlaceHolder = '搜索频道...';
-  const themeLightLabel = '切换为暗色';
-  const themeDarkLabel = '切换为亮色';
-  const paletteLabel = '选择主题色';
-  const viewListLabel = '排列为模块视图';
-  const viewModuleLabel = '排列为列表视图';
+function PersistentDrawerLeft(props) {
+  const searchPlaceHolder = props.filter ?
+      '在' + props.filter + '中搜索...' : '搜索频道...';
+
+  const {window} = props;
+  const container = window !== undefined ?
+      () => window().document.body : undefined;
 
   const classes = useStyles();
   const theme = useTheme();
   const [themeMode, setThemeMode] = React.useState(theme.palette.type);
   const [itemView, setItemView] = React.useState('module');
-  const [open, setOpen] = React.useState(true);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  React.useEffect(() => { // 页面渲染完成后更新 itemView 值为 localStorage 中的值
+    setItemView(localStorage.itemView ?
+        localStorage.itemView : 'module');
+  }, []);
+
+  const handleDrawerToggle = () => { // 打开或关闭抽屉
+    setMobileOpen(!mobileOpen);
   };
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const handleMobileMenuOpen = (event) => {
+  const handleMobileMenuOpen = (event) => { // 打开移动端的操作菜单
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
+  const handleMobileMenuClose = () => { // 关闭移动端的操作菜单
     setMobileMoreAnchorEl(null);
   };
 
-  const handleThemeModeSwitch = () => {
+  const handleThemeModeSwitch = () => { // 点击切换深色/浅色主题颜色
     setThemeMode(themeMode == 'light' ? 'dark' : 'light');
   };
 
-  const handlePaletteOpen = () => {
+  const handlePaletteOpen = () => { // 点击打开主题色选择器
     //
   };
 
-  const handleItemViewSwitch = () => {
+  const handleItemViewSwitch = () => { // 点击切换 IPTV 节目展示方式
+    itemView == 'module' ?
+        localStorage.itemView = 'list' :
+        localStorage.itemView = 'module';
     setItemView(itemView == 'module' ? 'list' : 'module');
   };
 
+  /**
+   * 渲染切换深色/浅色主题颜色按钮
+   */
   const renderThemeModeIconButton = (
     <IconButton color="inherit" onClick={handleThemeModeSwitch}>
       <Badge color="secondary">
@@ -195,6 +194,9 @@ export default function PersistentDrawerLeft() {
     </IconButton>
   );
 
+  /**
+   * 渲染打开主题色选择器按钮
+   */
   const renderPaletteIconButton = (
     <IconButton color="inherit" onClick={handlePaletteOpen}>
       <Badge color="secondary">
@@ -203,6 +205,9 @@ export default function PersistentDrawerLeft() {
     </IconButton>
   );
 
+  /**
+   * 渲染切换 IPTV 节目展示方式按钮
+   */
   const renderItemViewIconButton = (
     <IconButton color="inherit" onClick={handleItemViewSwitch}>
       <Badge color="secondary">
@@ -211,6 +216,9 @@ export default function PersistentDrawerLeft() {
     </IconButton>
   );
 
+  /**
+   * 渲染移动端菜单中的操作按钮
+   */
   const renderMenuItems = (
     <div>
       <MenuItem onClick={handleThemeModeSwitch}>
@@ -232,6 +240,9 @@ export default function PersistentDrawerLeft() {
     </div>
   );
 
+  /**
+   * 渲染桌面端 App Bar 的操作按钮
+   */
   const renderDesktopActions = (
     <div>
       {renderThemeModeIconButton}
@@ -240,6 +251,9 @@ export default function PersistentDrawerLeft() {
     </div>
   );
 
+  /**
+   * 渲染移动端菜单
+   */
   const menuId = 'app-bar-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -255,25 +269,84 @@ export default function PersistentDrawerLeft() {
     </Menu>
   );
 
+  /**
+   * 根据抽屉列表元素的 type 返回对应 Icon 组件
+   * @param {string} type 元素的类型
+   * @return {component}
+   */
+  function renderDrawerListItemIcon(type) {
+    switch (type) {
+      case 'all':
+        return <LiveTvIcon />;
+      case 'hd':
+        return <HdIcon />;
+      case 'radio':
+        return <RadioIcon />;
+      case 'star':
+        return <StarsIcon />;
+      case 'favorite':
+        return <FavoriteIcon />;
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * 根据抽屉列表元素的 divider 值在该列表项的下方渲染分割线
+   * @param {boolean} divider 组件是否在该元素下方渲染
+   * @return {component}
+   */
+  function renderDrawerListItemDivider(divider) {
+    if (divider) {
+      return <Divider className={classes.drawerDivider} />;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * 渲染抽屉
+   */
+  const renderDrawer = (
+    <div>
+      <div className={classes.toolbar} />
+      <Divider />
+      <List>
+        {channelList.map((list) => (
+          <div key={list.filter}>
+            <Link href={'/channel/' + list.filter}>
+              <ListItem button selected={props.filter === list.filter}>
+                <ListItemIcon>
+                  {renderDrawerListItemIcon(list.type)}
+                </ListItemIcon>
+                <ListItemText primary={list.filter} />
+              </ListItem>
+            </Link>
+            {renderDrawerListItemDivider(list.divider)}
+          </div>
+        ))}
+      </List>
+    </div>
+  );
+
   return (
     <div className={classes.root}>
       <AppBar
         position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
+        className={classes.appBar}
       >
         <Toolbar>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
             edge="start"
-            className={clsx(classes.menuButton, open && classes.hide)}
+            onClick={handleDrawerToggle}
+            className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
+
           <Typography variant="h6" noWrap>{appName}</Typography>
+
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -287,10 +360,13 @@ export default function PersistentDrawerLeft() {
               inputProps={{'aria-label': 'search'}}
             />
           </div>
+
           <div className={classes.grow} />
+
           <div className={classes.sectionDesktop}>
             {renderDesktopActions}
           </div>
+
           <div className={classes.sectionMobile}>
             <IconButton
               aria-label="show more"
@@ -302,43 +378,43 @@ export default function PersistentDrawerLeft() {
               <MoreIcon />
             </IconButton>
           </div>
+          {renderMobileMenu}
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ?
-              <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ?
-                  <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
-      >
-        <div className={classes.drawerHeader} />
+      <nav className={classes.drawer}>
+        <Hidden smUp implementation="css">
+          <Drawer
+            container={container}
+            variant="temporary"
+            anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            {renderDrawer}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {renderDrawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
         <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit,
           sed do eiusmod tempor incididunt
@@ -361,8 +437,13 @@ export default function PersistentDrawerLeft() {
           donec massa sapien faucibus et molestie ac.
         </Typography>
       </main>
-
-      {renderMobileMenu}
     </div>
   );
 }
+
+PersistentDrawerLeft.propTypes = {
+  window: PropTypes.func,
+  filter: PropTypes.string,
+};
+
+export default PersistentDrawerLeft;
