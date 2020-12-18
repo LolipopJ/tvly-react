@@ -8,15 +8,13 @@ import 'fontsource-roboto/400-normal.css';
 import 'fontsource-roboto/500-normal.css';
 import 'fontsource-roboto/700-normal.css';
 
-
-const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+// const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+const defaultThemeType = 'light';
+const defaultThemePrimary = '#e91e63';
 
 // eslint-disable-next-line react/prop-types
 function MyApp({Component, pageProps}) {
-  console.log('Release version: ' + appVersion);
-
-  const defaultThemeType = 'light';
-  const defaultThemePrimary = '#e91e63';
+  // console.log('Release version: ' + appVersion);
 
   const [themePaletteType, setthemePaletteType] =
       React.useState(defaultThemeType);

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import PropTypes from 'prop-types';
 import {fade, makeStyles, useTheme} from '@material-ui/core/styles';
 
+import channelFilter from '../assets/channelFilter';
+
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
@@ -37,7 +39,10 @@ import RadioIcon from '@material-ui/icons/Radio';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import ColorPicker from './app/colorPicker';
-import channelFilter from '../assets/channelFilter';
+import AppSnackbar from './app/appSnackbar';
+
+// FIXME: Test main view component, to be removed.
+import MainView from './testMainView';
 
 const drawerWidth = 240;
 
@@ -62,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: drawerWidth,
     },
   },
-  appBarTitle: {
+  appBarTitle: { // App Bar 上的 title 样式
     cursor: 'pointer',
   },
   menuButton: { // 打开 Drawer 的按钮
@@ -128,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
       flexShrink: 0,
     },
   },
-  drawerDivider: {
+  drawerDivider: { // 抽屉的分割线
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
@@ -152,12 +157,18 @@ function App(props) {
 
   const classes = useStyles();
   const theme = useTheme();
+
   const [themeMode, setThemeMode] = React.useState(theme.palette.type);
   const [itemView, setItemView] = React.useState(defaultChannelView);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const appSnackbarRef = React.useRef();
+  const setSnackbar = (text) => { // 为 AppSnackbar 绑定访问方法
+    appSnackbarRef.current.handleSetSnackbar(text);
+  };
 
   React.useEffect(() => { // 页面渲染完成后更新 itemView 值为 localStorage 中的值
     setItemView(localStorage.itemView ?
@@ -500,33 +511,17 @@ function App(props) {
 
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-          sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum
-          facilisis leo vel. Risus at ultrices mi tempus imperdiet.
-          Semper risus in hendrerit
-          gravida rutrum quisque non tellus. Convallis convallis tellus
-          id interdum velit laoreet id
-          donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus
-          euismod quis viverra nibh cras.
-          Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis
-          imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget
-          arcu dictum varius duis at consectetur lorem. Velit sed
-          ullamcorper morbi tincidunt. Lorem
-          donec massa sapien faucibus et molestie ac.
-        </Typography>
+        <MainView setSnackbar={setSnackbar} />
+        {props.main}
       </main>
+
+      <AppSnackbar ref={appSnackbarRef} />
     </div>
   );
 }
 
 App.propTypes = {
+  main: PropTypes.func,
   window: PropTypes.func,
   filter: PropTypes.string,
   switchThemePaletteType: PropTypes.func,

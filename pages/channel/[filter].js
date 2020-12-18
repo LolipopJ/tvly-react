@@ -8,8 +8,8 @@ import App from '../../components/app';
 const appNameShort = process.env.NEXT_PUBLIC_APP_NAME_SHORT;
 
 const Post = (props) => {
-  const router = useRouter();
-  const {filter} = router.query;
+  const Router = useRouter();
+  const {filter} = Router.query;
 
   return (
     <div>
