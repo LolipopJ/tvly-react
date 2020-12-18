@@ -7,6 +7,7 @@ import {fade, makeStyles, useTheme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Badge from '@material-ui/core/Badge';
+import Box from '@material-ui/core/Box';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
@@ -19,6 +20,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Hidden from '@material-ui/core/Hidden';
+import Popover from '@material-ui/core/Popover';
+import PopupState, {bindTrigger, bindPopover} from 'material-ui-popup-state';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
@@ -33,7 +36,8 @@ import StarsIcon from '@material-ui/icons/Stars';
 import RadioIcon from '@material-ui/icons/Radio';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 
-import channelList from '../assets/channelList';
+import ColorPicker from './app/colorPicker';
+import channelFilter from '../assets/channelFilter';
 
 const drawerWidth = 240;
 
@@ -56,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
     },
+  },
+  appBarTitle: {
+    cursor: 'pointer',
   },
   menuButton: { // 打开 Drawer 的按钮
     marginRight: theme.spacing(2),
@@ -134,11 +141,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PersistentDrawerLeft(props) {
-  const searchPlaceHolder = props.filter ?
+function App(props) {
+  const searchPlaceHolder = props.filter && props.filter != 'start' ?
       '在' + props.filter + '中搜索...' : '搜索频道...';
 
-  const {window} = props;
+  const {window, switchThemePaletteType, selectThemePalettePrimary} = props;
   const container = window !== undefined ?
       () => window().document.body : undefined;
 
@@ -174,10 +181,7 @@ function PersistentDrawerLeft(props) {
 
   const handleThemeModeSwitch = () => { // 点击切换深色/浅色主题颜色
     setThemeMode(themeMode == 'light' ? 'dark' : 'light');
-  };
-
-  const handlePaletteOpen = () => { // 点击打开主题色选择器
-    //
+    switchThemePaletteType();
   };
 
   const handleItemViewSwitch = () => { // 点击切换 IPTV 节目展示方式
@@ -199,14 +203,81 @@ function PersistentDrawerLeft(props) {
   );
 
   /**
-   * 渲染打开主题色选择器按钮
+   * 渲染桌面端主题颜色选择器按钮
    */
-  const renderPaletteIconButton = (
-    <IconButton color="inherit" onClick={handlePaletteOpen}>
-      <Badge color="secondary">
-        <PaletteIcon />
-      </Badge>
-    </IconButton>
+  const colorPickerPopupId = 'app-theme-color-picker-popup';
+  const renderDesktopColorPickerButton = (
+    <PopupState variant="popover" popupId={colorPickerPopupId}>
+      {(popupState) => (
+        <div>
+          <IconButton
+            {...bindTrigger(popupState)}
+            color="inherit"
+          >
+            <Badge color="secondary">
+              <PaletteIcon />
+            </Badge>
+          </IconButton>
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Box p={2}>
+              <ColorPicker
+                selectThemePalettePrimary={selectThemePalettePrimary}
+              />
+            </Box>
+          </Popover>
+        </div>
+      )}
+    </PopupState>
+  );
+
+  // eslint-disable-next-line valid-jsdoc
+  /**
+   * 渲染移动端主题颜色选择操作菜单项
+   */
+  const renderMobileColorPickerMenuItem = (
+    <PopupState variant="popover" popupId={colorPickerPopupId}>
+      {(popupState) => (
+        <div>
+          <MenuItem {...bindTrigger(popupState)}>
+            <IconButton
+              color="inherit"
+            >
+              <Badge color="secondary">
+                <PaletteIcon />
+              </Badge>
+            </IconButton>
+            <p>{paletteLabel}</p>
+          </MenuItem>
+          <Popover
+            {...bindPopover(popupState)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Box p={2}>
+              <ColorPicker
+                selectThemePalettePrimary={selectThemePalettePrimary}
+              />
+            </Box>
+          </Popover>
+        </div>
+      )}
+    </PopupState>
   );
 
   /**
@@ -231,10 +302,7 @@ function PersistentDrawerLeft(props) {
           {themeMode == 'light' ? themeLightLabel : themeDarkLabel}
         </p>
       </MenuItem>
-      <MenuItem onClick={handlePaletteOpen}>
-        {renderPaletteIconButton}
-        <p>{paletteLabel}</p>
-      </MenuItem>
+      {renderMobileColorPickerMenuItem}
       <MenuItem onClick={handleItemViewSwitch}>
         {renderItemViewIconButton}
         <p>
@@ -245,32 +313,42 @@ function PersistentDrawerLeft(props) {
   );
 
   /**
-   * 渲染桌面端 App Bar 的操作按钮
+   * 渲染桌面端的操作按钮
    */
   const renderDesktopActions = (
-    <div>
+    <div className={classes.sectionDesktop}>
       {renderThemeModeIconButton}
-      {renderPaletteIconButton}
+      {renderDesktopColorPickerButton}
       {renderItemViewIconButton}
     </div>
   );
 
   /**
-   * 渲染移动端菜单
+   * 渲染移动端的操作按钮及菜单
    */
   const menuId = 'app-bar-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-      id={menuId}
-      keepMounted
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      {renderMenuItems}
-    </Menu>
+  const renderMobileActionsMenu = (
+    <div className={classes.sectionMobile}>
+      <IconButton
+        aria-controls={menuId}
+        aria-haspopup="true"
+        onClick={handleMobileMenuOpen}
+        color="inherit"
+      >
+        <MoreIcon />
+      </IconButton>
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+        id={menuId}
+        keepMounted
+        transformOrigin={{vertical: 'top', horizontal: 'right'}}
+        open={isMobileMenuOpen}
+        onClose={handleMobileMenuClose}
+      >
+        {renderMenuItems}
+      </Menu>
+    </div>
   );
 
   /**
@@ -316,21 +394,21 @@ function PersistentDrawerLeft(props) {
       <div className={classes.toolbar} />
       <Divider />
       <List>
-        {channelList.map((list) => (
-          <div key={list.filter}>
-            <Link href={'/channel/' + list.filter}>
+        {channelFilter.map((item) => (
+          <div key={item.filter}>
+            <Link href={'/channel/' + item.filter}>
               <ListItem
                 button
-                selected={props.filter === list.filter}
+                selected={props.filter === item.filter}
                 onClick={handelDrawerClose}
               >
                 <ListItemIcon>
-                  {renderDrawerListItemIcon(list.type)}
+                  {renderDrawerListItemIcon(item.type)}
                 </ListItemIcon>
-                <ListItemText primary={list.filter} />
+                <ListItemText primary={item.filter} />
               </ListItem>
             </Link>
-            {renderDrawerListItemDivider(list.divider)}
+            {renderDrawerListItemDivider(item.divider)}
           </div>
         ))}
       </List>
@@ -353,7 +431,15 @@ function PersistentDrawerLeft(props) {
             <MenuIcon />
           </IconButton>
 
-          <Typography variant="h6" noWrap>{appName}</Typography>
+          <Link href="/channel/start">
+            <Typography
+              variant="h6"
+              noWrap
+              className={classes.appBarTitle}
+            >{appName}</Typography>
+          </Link>
+
+          <div className={classes.grow} />
 
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -371,22 +457,10 @@ function PersistentDrawerLeft(props) {
 
           <div className={classes.grow} />
 
-          <div className={classes.sectionDesktop}>
-            {renderDesktopActions}
-          </div>
+          {renderDesktopActions}
 
-          <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </div>
-          {renderMobileMenu}
+          {renderMobileActionsMenu}
+
         </Toolbar>
       </AppBar>
 
@@ -449,9 +523,11 @@ function PersistentDrawerLeft(props) {
   );
 }
 
-PersistentDrawerLeft.propTypes = {
+App.propTypes = {
   window: PropTypes.func,
   filter: PropTypes.string,
+  switchThemePaletteType: PropTypes.func,
+  selectThemePalettePrimary: PropTypes.func,
 };
 
-export default PersistentDrawerLeft;
+export default App;

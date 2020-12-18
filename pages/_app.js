@@ -1,5 +1,5 @@
 import React from 'react';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import PropTypes from 'prop-types';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import '../styles/globals.css';
@@ -15,27 +15,89 @@ const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 function MyApp({Component, pageProps}) {
   console.log('Release version: ' + appVersion);
 
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [themePaletteType, setthemePaletteType] =
+      React.useState('light');
 
-  const theme = React.useMemo(
-      () =>
-        createMuiTheme({
-          palette: {
-            type: prefersDarkMode ? 'dark' : 'light',
-            // primary: prefersDarkMode ? {} : {
-            //   main: '#f50057',
-            // },
-          },
-        }),
-      [prefersDarkMode],
-  );
+  const [themePalettePrimary, setThemePalettePrimary] =
+      React.useState('#e91e63');
+
+  const [theme, setTheme] = React.useState(createMuiTheme({
+    palette: {
+      type: themePaletteType,
+      primary: {
+        main: themePalettePrimary,
+      },
+    },
+  }));
+
+  // React.useEffect(() => {
+  //   const localStorageThemeType = localStorage.themeType ?
+  //       localStorage.primaryColor : 'light';
+  //   const localStoragePrimaryColor = localStorage.primaryColor ?
+  //       localStorage.primaryColor : '#e91e63';
+  //   setthemePaletteType(localStorageThemeType);
+  //   setThemePalettePrimary(localStoragePrimaryColor);
+  //   setTheme(createMuiTheme({
+  //     palette: {
+  //       type: localStorageThemeType,
+  //       primary: {
+  //         main: localStoragePrimaryColor,
+  //       },
+  //     },
+  //   }));
+  // }, []);
+
+  React.useEffect(() => { // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+  });
+
+  function handleThemePaletteType() { // 切换主题深浅
+    const nowThemeType = theme.palette.type == 'light' ? 'dark' : 'light';
+    setthemePaletteType(nowThemeType);
+    setTheme(createMuiTheme({
+      palette: {
+        type: nowThemeType,
+        primary: {
+          main: themePalettePrimary,
+        },
+      },
+    }));
+    localStorage.themeType = nowThemeType;
+  }
+
+  function handleThemePalettePrimary(selectColor) { // 切换主题色
+    setThemePalettePrimary(selectColor);
+    setTheme(createMuiTheme({
+      palette: {
+        type: themePaletteType,
+        primary: {
+          main: selectColor,
+        },
+      },
+    }));
+    localStorage.primaryColor = selectColor;
+  }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <React.Fragment>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Component
+          switchThemePaletteType={handleThemePaletteType}
+          selectThemePalettePrimary={handleThemePalettePrimary}
+          {...pageProps}
+        />
+      </ThemeProvider>
+    </React.Fragment>
   );
 }
+
+MyApp.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+  pageProps: PropTypes.object.isRequired,
+};
 
 export default MyApp;
