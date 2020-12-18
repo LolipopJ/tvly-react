@@ -46,12 +46,13 @@ import MainView from './testMainView';
 
 const drawerWidth = 240;
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME;
+const appNameShort = process.env.NEXT_PUBLIC_APP_NAME_SHORT;
+const appNameXShort = process.env.NEXT_PUBLIC_APP_NAME_X_SHORT;
 const themeLightLabel = '切换为暗色';
 const themeDarkLabel = '切换为亮色';
 const paletteLabel = '选择主题色';
-const viewListLabel = '排列为模块视图';
-const viewModuleLabel = '排列为列表视图';
+const viewListLabel = '切换为模块视图';
+const viewModuleLabel = '切换为列表视图';
 const defaultChannelView = 'module';
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   appBar: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
     },
@@ -72,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: { // 打开 Drawer 的按钮
     marginRight: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('md')]: {
       display: 'none',
     },
   },
@@ -85,11 +86,7 @@ const useStyles = makeStyles((theme) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
+    width: 'auto',
   },
   searchIcon: { // 搜索栏图标
     padding: theme.spacing(0, 2),
@@ -112,15 +109,15 @@ const useStyles = makeStyles((theme) => ({
       width: '20ch',
     },
   },
-  sectionDesktop: { // 桌面端 App Bar 的操作按钮
+  sectionDesktop: { // 桌面端
     display: 'none',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('sm')]: {
       display: 'flex',
     },
   },
-  sectionMobile: { // 移动端 App Bar 的操作按钮
+  sectionMobile: { // 移动端
     display: 'flex',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
   },
@@ -128,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   drawer: { // 抽屉
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('md')]: {
       width: drawerWidth,
       flexShrink: 0,
     },
@@ -450,7 +447,10 @@ function App(props) {
               variant="h6"
               noWrap
               className={classes.appBarTitle}
-            >{appName}</Typography>
+            >
+              <span className={classes.sectionDesktop}>{appNameShort}</span>
+              <span className={classes.sectionMobile}>{appNameXShort}</span>
+            </Typography>
           </Link>
 
           <div className={classes.grow} />
@@ -468,8 +468,6 @@ function App(props) {
               inputProps={{'aria-label': 'search'}}
             />
           </div>
-
-          <div className={classes.grow} />
 
           {renderDesktopActions}
 
@@ -496,7 +494,7 @@ function App(props) {
             {renderDrawer}
           </Drawer>
         </Hidden>
-        <Hidden xsDown implementation="css">
+        <Hidden smDown implementation="css">
           <Drawer
             classes={{
               paper: classes.drawerPaper,
@@ -524,8 +522,8 @@ App.propTypes = {
   main: PropTypes.func,
   window: PropTypes.func,
   filter: PropTypes.string,
-  switchThemePaletteType: PropTypes.func,
-  selectThemePalettePrimary: PropTypes.func,
+  switchThemePaletteType: PropTypes.func.isRequired,
+  selectThemePalettePrimary: PropTypes.func.isRequired,
 };
 
 export default App;

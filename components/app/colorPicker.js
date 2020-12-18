@@ -23,7 +23,7 @@ function ColorPicker(props) {
 }
 
 ColorPicker.propTypes = {
-  selectThemePalettePrimary: PropTypes.func,
+  selectThemePalettePrimary: PropTypes.func.isRequired,
 };
 
 export default ColorPicker;

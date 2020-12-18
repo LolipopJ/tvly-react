@@ -28,8 +28,6 @@ function ChannelCard(props) {
   const classes = useStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
-  console.log(props);
-
   const handleButtonClick = () => {
     props.setSnackbar('You clicked this button');
   };
@@ -64,7 +62,7 @@ function ChannelCard(props) {
 }
 
 ChannelCard.propTypes = {
-  setSnackbar: PropTypes.func,
+  setSnackbar: PropTypes.func.isRequired,
 };
 
 export default ChannelCard;

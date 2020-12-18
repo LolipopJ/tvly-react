@@ -27,8 +27,8 @@ const Post = (props) => {
 };
 
 Post.propTypes = {
-  switchThemePaletteType: PropTypes.func,
-  selectThemePalettePrimary: PropTypes.func,
+  switchThemePaletteType: PropTypes.func.isRequired,
+  selectThemePalettePrimary: PropTypes.func.isRequired,
 };
 
 export default Post;
