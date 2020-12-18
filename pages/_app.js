@@ -15,11 +15,14 @@ const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 function MyApp({Component, pageProps}) {
   console.log('Release version: ' + appVersion);
 
+  const defaultThemeType = 'light';
+  const defaultThemePrimary = '#e91e63';
+
   const [themePaletteType, setthemePaletteType] =
-      React.useState('light');
+      React.useState(defaultThemeType);
 
   const [themePalettePrimary, setThemePalettePrimary] =
-      React.useState('#e91e63');
+      React.useState(defaultThemePrimary);
 
   const [theme, setTheme] = React.useState(createMuiTheme({
     palette: {
@@ -30,22 +33,22 @@ function MyApp({Component, pageProps}) {
     },
   }));
 
-  // React.useEffect(() => {
-  //   const localStorageThemeType = localStorage.themeType ?
-  //       localStorage.primaryColor : 'light';
-  //   const localStoragePrimaryColor = localStorage.primaryColor ?
-  //       localStorage.primaryColor : '#e91e63';
-  //   setthemePaletteType(localStorageThemeType);
-  //   setThemePalettePrimary(localStoragePrimaryColor);
-  //   setTheme(createMuiTheme({
-  //     palette: {
-  //       type: localStorageThemeType,
-  //       primary: {
-  //         main: localStoragePrimaryColor,
-  //       },
-  //     },
-  //   }));
-  // }, []);
+  React.useEffect(() => { //
+    const localStorageThemeType = localStorage.themeType ?
+        localStorage.themeType : defaultThemeType;
+    const localStoragePrimaryColor = localStorage.primaryColor ?
+        localStorage.primaryColor : defaultThemePrimary;
+    setthemePaletteType(localStorageThemeType);
+    setThemePalettePrimary(localStoragePrimaryColor);
+    setTheme(createMuiTheme({
+      palette: {
+        type: localStorageThemeType,
+        primary: {
+          main: localStoragePrimaryColor,
+        },
+      },
+    }));
+  }, []);
 
   React.useEffect(() => { // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -56,7 +59,6 @@ function MyApp({Component, pageProps}) {
 
   function handleThemePaletteType() { // 切换主题深浅
     const nowThemeType = theme.palette.type == 'light' ? 'dark' : 'light';
-    setthemePaletteType(nowThemeType);
     setTheme(createMuiTheme({
       palette: {
         type: nowThemeType,
@@ -65,11 +67,11 @@ function MyApp({Component, pageProps}) {
         },
       },
     }));
+    setthemePaletteType(nowThemeType);
     localStorage.themeType = nowThemeType;
   }
 
   function handleThemePalettePrimary(selectColor) { // 切换主题色
-    setThemePalettePrimary(selectColor);
     setTheme(createMuiTheme({
       palette: {
         type: themePaletteType,
@@ -78,6 +80,7 @@ function MyApp({Component, pageProps}) {
         },
       },
     }));
+    setThemePalettePrimary(selectColor);
     localStorage.primaryColor = selectColor;
   }
 

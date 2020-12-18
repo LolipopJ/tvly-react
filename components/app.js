@@ -47,6 +47,7 @@ const themeDarkLabel = '切换为亮色';
 const paletteLabel = '选择主题色';
 const viewListLabel = '排列为模块视图';
 const viewModuleLabel = '排列为列表视图';
+const defaultChannelView = 'module';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -152,7 +153,7 @@ function App(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [themeMode, setThemeMode] = React.useState(theme.palette.type);
-  const [itemView, setItemView] = React.useState('module');
+  const [itemView, setItemView] = React.useState(defaultChannelView);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -160,14 +161,14 @@ function App(props) {
 
   React.useEffect(() => { // 页面渲染完成后更新 itemView 值为 localStorage 中的值
     setItemView(localStorage.itemView ?
-        localStorage.itemView : 'module');
+        localStorage.itemView : defaultChannelView);
   }, []);
 
   const handleDrawerToggle = () => { // 打开或关闭抽屉
     setMobileOpen(!mobileOpen);
   };
 
-  const handelDrawerClose = () => {
+  const handelDrawerClose = () => { // 关闭抽屉
     setMobileOpen(false);
   };
 
@@ -391,7 +392,9 @@ function App(props) {
    */
   const renderDrawer = (
     <div>
-      <div className={classes.toolbar} />
+      <div className={classes.toolbar}>
+
+      </div>
       <Divider />
       <List>
         {channelFilter.map((item) => (
