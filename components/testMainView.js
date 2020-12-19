@@ -3,6 +3,13 @@ import ChannelCard from './channel/channelCard';
 
 export default function MainView(props) {
   return (
-    <ChannelCard {...props} />
+    <div>
+      <ChannelCard {...props} />
+      <ChannelCard {...props} />
+      <ChannelCard {...props} />
+      <ChannelCard {...props} />
+      <ChannelCard {...props} />
+      <ChannelCard {...props} />
+    </div>
   );
 }

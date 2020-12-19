@@ -39,6 +39,7 @@ import RadioIcon from '@material-ui/icons/Radio';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import ColorPicker from './app/colorPicker';
+import BackToTopButton from './app/backToTopButton';
 import AppSnackbar from './app/appSnackbar';
 
 // FIXME: Test main view component, to be removed.
@@ -514,6 +515,9 @@ function App(props) {
       </main>
 
       <AppSnackbar ref={appSnackbarRef} />
+
+      <BackToTopButton />
+
     </div>
   );
 }

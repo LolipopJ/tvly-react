@@ -9,9 +9,9 @@ function ColorPicker(props) {
   const [color, setColor] = React.useState(theme.palette.primary.main);
 
   const handleColorChange = (themeColor, event) => {
+    // console.log(themeColor.hex);
     setColor(themeColor.hex);
     selectThemePalettePrimary(themeColor.hex);
-    console.log(themeColor.hex);
   };
 
   return (
