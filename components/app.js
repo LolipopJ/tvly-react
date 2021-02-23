@@ -146,8 +146,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
-  const searchPlaceHolder = props.filter && props.filter != 'start' ?
-      '在' + props.filter + '中搜索...' : '搜索频道...';
+  const searchPlaceHolder = props.filter ?
+    '在' + props.filter + '中搜索...' : '在全部频道中搜索...';
 
   const {window, switchThemePaletteType, selectThemePalettePrimary} = props;
   const container = window !== undefined ?
@@ -408,7 +408,7 @@ function App(props) {
       <List>
         {channelFilter.map((item) => (
           <div key={item.filter}>
-            <Link href={'/channel/' + item.filter}>
+            <Link href={item.filter}>
               <ListItem
                 button
                 selected={props.filter === item.filter}
@@ -443,7 +443,7 @@ function App(props) {
             <MenuIcon />
           </IconButton>
 
-          <Link href="/channel/start">
+          <Link href="/">
             <Typography
               variant="h6"
               noWrap

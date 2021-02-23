@@ -13,3 +13,9 @@ yarn install
 ```bash
 yarn dev
 ```
+
+### Run lint
+
+```bash
+yarn lint
+```

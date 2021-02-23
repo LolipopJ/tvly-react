@@ -1,12 +1,28 @@
 import React from 'react';
-import {useRouter} from 'next/router';
+import PropTypes from 'prop-types';
+import Head from 'next/head';
 
-export default function RedirectToStartPage() {
-  const Router = useRouter();
+import App from '../components/app';
 
-  React.useEffect(() => {
-    Router.push('/channel/start');
-  });
+const appNameShort = process.env.NEXT_PUBLIC_APP_NAME_SHORT;
 
-  return null;
-}
+const Index = (props) => {
+  return (
+    <div>
+      <Head>
+        <title>{appNameShort}</title>
+      </Head>
+      <App
+        switchThemePaletteType={props.switchThemePaletteType}
+        selectThemePalettePrimary={props.selectThemePalettePrimary}
+      />
+    </div>
+  );
+};
+
+Index.propTypes = {
+  switchThemePaletteType: PropTypes.func.isRequired,
+  selectThemePalettePrimary: PropTypes.func.isRequired,
+};
+
+export default Index;

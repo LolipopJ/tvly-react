@@ -1,12 +1,10 @@
-import React from 'react';
 import {useRouter} from 'next/router';
 
-export default function RedirectToStartPage() {
+export default function RedirectToIndex() {
   const Router = useRouter();
 
-  React.useEffect(() => {
-    Router.push('/channel/start');
-  });
+  const isClient = typeof document !== 'undefined';
+  isClient && Router.replace('/');
 
   return null;
 }

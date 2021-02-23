@@ -31,7 +31,7 @@ function MyApp({Component, pageProps}) {
     },
   }));
 
-  React.useEffect(() => { //
+  React.useEffect(() => { // 启动时设置主题深浅和主题色
     const localStorageThemeType = localStorage.themeType ?
         localStorage.themeType : defaultThemeType;
     const localStoragePrimaryColor = localStorage.primaryColor ?
