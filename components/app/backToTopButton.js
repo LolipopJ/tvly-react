@@ -4,6 +4,8 @@ import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Zoom from '@material-ui/core/Zoom';
 
+import {throttle} from 'lodash-es';
+
 const useStyles = makeStyles((theme) => ({
   fab: {
     position: 'fixed',
@@ -28,11 +30,12 @@ export default function BackToTopButton() {
 
   React.useEffect(() => {
     document.addEventListener('scroll', handleScroll, true);
-    return () => document.removeEventListener('scroll', handleScroll);
-  }, [btnVisible]);
+    return () => {
+      document.removeEventListener('scroll', handleScroll, true);
+    };
+  });
 
-  // TODO: 使用节流函数增加性能
-  const handleScroll = () => { // 处理滚动事件
+  const handleScroll = throttle(()=> { // 处理滚动事件，每 200ms 触发一次
     const scrollTop = window.pageYOffset;
 
     // 当滚动的距离大于 300 时，显示按钮
@@ -41,7 +44,7 @@ export default function BackToTopButton() {
     } else {
       setBtnVisible(false);
     }
-  };
+  }, 200);
 
   const handleBackToTop = () => { // 把页面滚动到页面顶部
     window.scrollTo({

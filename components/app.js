@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import {fade, makeStyles, useTheme} from '@material-ui/core/styles';
+import {alpha, makeStyles, useTheme} from '@material-ui/core/styles';
 
 import channelFilter from '../assets/channelFilter';
 
@@ -81,9 +81,9 @@ const useStyles = makeStyles((theme) => ({
   search: { // 搜索栏
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
     '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,

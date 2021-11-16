@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
+import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import '../styles/globals.css';
-import 'fontsource-roboto/300-normal.css';
-import 'fontsource-roboto/400-normal.css';
-import 'fontsource-roboto/500-normal.css';
-import 'fontsource-roboto/700-normal.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 const defaultThemeType = 'light';
@@ -22,7 +22,7 @@ function MyApp({Component, pageProps}) {
   const [themePalettePrimary, setThemePalettePrimary] =
       React.useState(defaultThemePrimary);
 
-  const [theme, setTheme] = React.useState(createMuiTheme({
+  const [theme, setTheme] = React.useState(createTheme({
     palette: {
       type: themePaletteType,
       primary: {
@@ -38,7 +38,7 @@ function MyApp({Component, pageProps}) {
         localStorage.primaryColor : defaultThemePrimary;
     setthemePaletteType(localStorageThemeType);
     setThemePalettePrimary(localStoragePrimaryColor);
-    setTheme(createMuiTheme({
+    setTheme(createTheme({
       palette: {
         type: localStorageThemeType,
         primary: {
@@ -57,7 +57,7 @@ function MyApp({Component, pageProps}) {
 
   function handleThemePaletteType() { // 切换主题深浅
     const nowThemeType = theme.palette.type == 'light' ? 'dark' : 'light';
-    setTheme(createMuiTheme({
+    setTheme(createTheme({
       palette: {
         type: nowThemeType,
         primary: {
@@ -70,7 +70,7 @@ function MyApp({Component, pageProps}) {
   }
 
   function handleThemePalettePrimary(selectColor) { // 切换主题色
-    setTheme(createMuiTheme({
+    setTheme(createTheme({
       palette: {
         type: themePaletteType,
         primary: {
